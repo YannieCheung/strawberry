@@ -1,5 +1,5 @@
 *.project
-*.classpath
+**/.classpath
 **/.settings/
 Servers/
 .metadata/
