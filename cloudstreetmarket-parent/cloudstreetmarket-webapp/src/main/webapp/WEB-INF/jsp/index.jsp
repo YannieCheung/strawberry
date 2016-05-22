@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -171,7 +172,14 @@
 				 	<div class="hero-unit hidden-phone"><p>Welcome to CloudStreet Market, the educational platform.</p></div>
 				</div>	
 				<div class='span5'>
-					<div id='landingGraphContainer'></div>
+					<div id='landingGraphContainer'>
+<%-- 						<div class='morrisTitle'>
+							<fmt:formatDate value="${dailyMarketActivity.dateSnapshot}" pattern="yyyy-MM-dd"/>
+						</div> --%>
+						<select class="form-control centeredElementBox">
+						 	<option value="${dailyMarketActivity.marketId}">${dailyMarketActivity.marketShortName}</option>
+						</select>
+					</div>
 					<div id='tableMarketPrices'>
 					 	<table class="table table-hover table-condensed table-bordered table-striped">
 							<thead>
@@ -182,7 +190,26 @@
 						 	</tr>
 						 	</thead>
 						 	<tbody>
+						 	<c:forEach var="market" items="${dailyMarketsActivity}">
 						 	<tr>
+						 		<td>${market.marketShortName}</td>
+						 		<td style='text-align: right'>
+ 									<fmt:formatNumber type="number" maxFractionDigits="3" value="${market.latestValue}"/>
+ 								</td>
+ 								<c:choose>
+ 									<c:when test="${market.latestChange >= 0}">
+ 										<c:set var="textStyle" scope="page" value="text-success"/>
+ 									</c:when>
+ 									<c:otherwise>
+ 										<c:set var="textStyle" scope="page" value="text-error"/>
+ 									</c:otherwise>
+ 								</c:choose>
+							 	<td class='${textStyle}' style='text-align: right'>
+	 								<b><fmt:formatNumber type="percent" maxFractionDigits="2" value="${market.latestChange}"/></b>
+	 							</td>
+ 							</tr>
+						 	</c:forEach>
+<!-- 						 	<tr>
 						 		<td>Dow Jones-IA</td><td>17,634.74</td>
 						 		<td class='text-success'><b>-18.05</b></td>
 						 	</tr>
@@ -201,7 +228,7 @@
 						 	<tr>
 						 		<td>1/100 DOW JONES INDUSTRIAL AVER</td><td>177.02</td>
 						 		<td class='text-error'><b>+2.86</b></td>
-						 	</tr>
+						 	</tr> -->
 						 	</tbody>
 						 	</table>
 					 </div>
@@ -209,7 +236,35 @@
 				<div id="containerCommunity" class='span7'>
 				 	<div id="divRss3">
 				 		<ul class="feedEkList">
-				 			<li>
+				 		<c:forEach var="activity" items="${recentUserActivity}">
+					 		<c:choose>
+								<c:when test="${activity.userAction == 'BUY'}">
+									<c:set var="icoUpDown" scope="page" value="ico-up-arrow actionBuy"/>
+								</c:when>
+								<c:otherwise>
+									<c:set var="icoUpDown" scope="page" value="ico-down-arrow actionSell"/>
+								</c:otherwise>
+							</c:choose>
+							<c:set var="defaultProfileImage" scope="page" value=""/>
+							<c:if test="${activity.urlProfilePicture == null}">
+								<c:set var="defaultProfileImage" scope="page" value="ico-user"/>
+							</c:if>
+							<li>
+								<div class="itemTitle">
+									<div class="listUserIco ${defaultProfileImage}">
+									 	<c:if test="${activity.urlProfilePicture != null}">
+									 		<img src='${activity.urlProfilePicture}'>
+										</c:if>
+									</div>
+									<span class="ico-white ${icoUpDown} listActionIco"></span>
+									<a href="#">${activity.userName}</a>
+									${activity.userAction.presentTense} ${activity.amount}
+									<a href="#">${activity.valueShortId}</a> at $${activity.price}
+									<p class="itemDate"><fmt:formatDate value="${activity.date}" pattern="dd/MM/yyyy hh:mm aaa"/></p>
+								</div>
+							</li>
+				 		</c:forEach>
+				 			<!-- <li>
 							  <div class="itemTitle">
 							    <div class="listUserIco">
 							      <img src='img/young-lad.jpg'>
@@ -227,7 +282,7 @@
 							    <a href="#">actionMan9</a> sells 6 <a href="#">CCH.L</a> at $12.00
 							    <p class="itemDate">15/11/2014 10:46 AM</p>
 							  </div>
-							</li>
+							</li> -->
 				 		</ul>
 				 	</div>
 				</div>
@@ -451,8 +506,32 @@
 <script src="js/raphael.js"></script>
 <script src="js/morris.min.js"></script>
 <script>
+var financial_data = [];
+
+<c:forEach var="dailySnapshot" items="${dailyMarketActivity.values}">
+financial_data.push({
+	"period": '<c:out value="${dailySnapshot.key}"/>', 
+	"index": <c:out value='${dailySnapshot.value}'/>
+});
+</c:forEach>
+</script>
+<script>
 $(function () {
-	 var financial_data = [
+	$(function () {
+		 Morris.Line({
+		 element: 'landingGraphContainer',
+		 hideHover: 'auto', data: financial_data,
+		 ymax: <c:out value="${dailyMarketActivity.maxValue}"/>,
+		 ymin: <c:out value="${dailyMarketActivity.minValue}"/>,
+		 pointSize: 3, hideHover:'always',
+		 xkey: 'period', xLabels: 'month',
+		 ykeys: ['index'], postUnits: '',
+		 parseTime: false, labels: ['Index'],
+		 resize: true, smooth: false,
+		 lineColors: ['#A52A2A']
+		 });
+		});
+	 /* var financial_data = [
 		 {"period": "08:00", "index": 66},
 		 {"period": "09:00", "index": 62},
 		 {"period": "10:00", "index": 61},
@@ -476,7 +555,7 @@ $(function () {
 		 parseTime: false, labels: ['Index'],
 		 resize: true, smooth: false,
 		 lineColors: ['#A52A2A']
-	 	});
+	 	}); */
 	});
 </script>
 <!-- end: Java Script -->
