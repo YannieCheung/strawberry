@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="cloudStreetMarketApp">
 <head>
 
 	<!-- start: Meta -->
@@ -172,71 +172,129 @@
 				 	<div class="hero-unit hidden-phone"><p>Welcome to CloudStreet Market, the educational platform.</p></div>
 				</div>	
 				<div class='span5'>
-					<div id='landingGraphContainer'>
-<%-- 						<div class='morrisTitle'>
-							<fmt:formatDate value="${dailyMarketActivity.dateSnapshot}" pattern="yyyy-MM-dd"/>
-						</div> --%>
-						<select class="form-control centeredElementBox">
-						 	<option value="${dailyMarketActivity.marketId}">${dailyMarketActivity.marketShortName}</option>
-						</select>
-					</div>
-					<div id='tableMarketPrices'>
-					 	<table class="table table-hover table-condensed table-bordered table-striped">
-							<thead>
-						 	<tr>
-						 		<th>Index</th>
-						 		<th>Value</th>
-						 		<th>Change</th>
-						 	</tr>
-						 	</thead>
-						 	<tbody>
-						 	<c:forEach var="market" items="${dailyMarketsActivity}">
-						 	<tr>
-						 		<td>${market.marketShortName}</td>
-						 		<td style='text-align: right'>
- 									<fmt:formatNumber type="number" maxFractionDigits="3" value="${market.latestValue}"/>
- 								</td>
- 								<c:choose>
- 									<c:when test="${market.latestChange >= 0}">
- 										<c:set var="textStyle" scope="page" value="text-success"/>
- 									</c:when>
- 									<c:otherwise>
- 										<c:set var="textStyle" scope="page" value="text-error"/>
- 									</c:otherwise>
- 								</c:choose>
-							 	<td class='${textStyle}' style='text-align: right'>
-	 								<b><fmt:formatNumber type="percent" maxFractionDigits="2" value="${market.latestChange}"/></b>
-	 							</td>
- 							</tr>
-						 	</c:forEach>
-<!-- 						 	<tr>
-						 		<td>Dow Jones-IA</td><td>17,634.74</td>
-						 		<td class='text-success'><b>-18.05</b></td>
-						 	</tr>
-						 	<tr>
-						 		<td>Nikkei 225</td><td>16,466.4</td>
-						 		<td class='text-success'><b>+23.89</b></td>
-						 	</tr>
-						 	<tr>
-						 		<td>TSEC weighted index</td><td>8,067.6</td>
-						 		<td class='text-success'><b>-9.5</b></td>
-						 	</tr>
-						 	<tr>
-						 		<td>FTSE MIB</td><td>18,965.41</td>
-						 		<td class='text-error'><b>-182.86</b></td>
-						 	</tr>
-						 	<tr>
-						 		<td>1/100 DOW JONES INDUSTRIAL AVER</td><td>177.02</td>
-						 		<td class='text-error'><b>+2.86</b></td>
-						 	</tr> -->
-						 	</tbody>
-						 	</table>
+					<div id="landingGraphContainerAndTools">
+						<div id='landingGraphContainer' ng-controller="homeFinancialGraphController">
+	<%-- 						<div class='morrisTitle'>
+								<fmt:formatDate value="${dailyMarketActivity.dateSnapshot}" pattern="yyyy-MM-dd"/>
+							</div> --%>
+							<select class="form-control centeredElementBox">
+							 	<option value="${dailyMarketActivity.marketId}">${dailyMarketActivity.marketShortName}</option>
+							</select>
+						</div>
+						<div id='tableMarketPrices'>
+							<script>
+								var dailyMarketsActivity = [];
+								var market;
+							</script>
+							<c:forEach var="market" items="${dailyMarketsActivity }">
+								<script>
+									market = {};
+									market.marketShortName = '${market.marketShortName}';
+									market.latestValue = (${market.latestValue}).toFixed(2);
+									market.latestChange = (${market.latestChange}*100).toFixed(2);
+									dailyMarketsActivity.push(market);
+								</script>
+							</c:forEach>
+						 	<table class="table table-hover table-condensed table-bordered table-striped" data-ng-controller='homeFinancialTableController'>
+								<thead>
+							 	<tr>
+							 		<th>Index</th>
+							 		<th>Value</th>
+							 		<th>Change</th>
+							 	</tr>
+							 	</thead>
+							 	<tbody>
+							 	<!-- 使用ng -->
+							 		<tr data-ng-repeat="value in financialMarkets">
+							 			<td>{{value.marketShortName}}</td>
+							 			<td style="text-align:right">{{value.latestValue}}</td>
+							 			<td class='{{value.style}}' style="text-align:right">
+							 				<strong>{{value.latestChange}}%</strong>
+							 			</td>
+							 		</tr>
+							 	<!-- 使用JSTL -->
+							 	<%-- <c:forEach var="market" items="${dailyMarketsActivity}">
+							 	<tr>
+							 		<td>${market.marketShortName}</td>
+							 		<td style='text-align: right'>
+	 									<fmt:formatNumber type="number" maxFractionDigits="3" value="${market.latestValue}"/>
+	 								</td>
+	 								<c:choose>
+	 									<c:when test="${market.latestChange >= 0}">
+	 										<c:set var="textStyle" scope="page" value="text-success"/>
+	 									</c:when>
+	 									<c:otherwise>
+	 										<c:set var="textStyle" scope="page" value="text-error"/>
+	 									</c:otherwise>
+	 								</c:choose>
+								 	<td class='${textStyle}' style='text-align: right'>
+		 								<b><fmt:formatNumber type="percent" maxFractionDigits="2" value="${market.latestChange}"/></b>
+		 							</td>
+	 							</tr>
+							 	</c:forEach> --%>
+							 	<!-- hardcode写入 -->
+	<!-- 						<tr>
+							 		<td>Dow Jones-IA</td><td>17,634.74</td>
+							 		<td class='text-success'><b>-18.05</b></td>
+							 	</tr>
+							 	<tr>
+							 		<td>Nikkei 225</td><td>16,466.4</td>
+							 		<td class='text-success'><b>+23.89</b></td>
+							 	</tr>
+							 	<tr>
+							 		<td>TSEC weighted index</td><td>8,067.6</td>
+							 		<td class='text-success'><b>-9.5</b></td>
+							 	</tr>
+							 	<tr>
+							 		<td>FTSE MIB</td><td>18,965.41</td>
+							 		<td class='text-error'><b>-182.86</b></td>
+							 	</tr>
+							 	<tr>
+							 		<td>1/100 DOW JONES INDUSTRIAL AVER</td><td>177.02</td>
+							 		<td class='text-error'><b>+2.86</b></td>
+							 	</tr> -->
+							 	</tbody>
+							 	</table>
+						 </div>
 					 </div>
 				</div>
 				<div id="containerCommunity" class='span7'>
 				 	<div id="divRss3">
-				 		<ul class="feedEkList">
+				 		<ul class="feedEkList" data-ng-controller='homeCommunityActivityController'>
+			 			<script>
+				 			var userActivities = [];
+				 			var userActivity;
+				 		</script>
 				 		<c:forEach var="activity" items="${recentUserActivity}">
+				 			<script>
+				 			userActivity = {};
+							userActivity.userAction = '${activity.userAction}';
+							userActivity.urlProfilePicture = '${activity.urlProfilePicture}';
+							userActivity.userName = '${activity.userName}';
+							userActivity.urlProfilePicture = '${activity.urlProfilePicture}';
+							userActivity.date = '<fmt:formatDate value="${activity.date}" pattern="dd/MM/yyyy hh:mm aaa"/>';
+							userActivity.userActionPresentTense = '${activity.userAction.presentTense}';
+							userActivity.amount = ${activity.amount};
+							userActivity.valueShortId = '${activity.valueShortId}';
+							userActivity.price = (${activity.price}).toFixed(2);
+							userActivities.push(userActivity);
+							</script>
+				 		</c:forEach>
+				 		<li data-ng-repeat="value in communityActivities">
+							<div class="itemTitle">
+								<div class="listUserIco {{value.defaultProfileImage}}">
+									<img ng-if="value.urlProfilePicture" src='{{value.urlProfilePicture}}'>
+								</div>
+								<span class="ico-white {{value.iconDirection}} listActionIco"></span>
+				
+								<a href="#">{{value.userName}}</a> 
+								{{value.userActionPresentTense}} {{value.amount}} 
+								<a href="#">{{value.valueShortId}}</a> at {{value.price}}
+								<p class="itemDate">{{value.date}}</p>
+							</div>
+					    </li>
+				 		<!-- 使用jstl -->
+				 		<%-- <c:forEach var="activity" items="${recentUserActivity}">
 					 		<c:choose>
 								<c:when test="${activity.userAction == 'BUY'}">
 									<c:set var="icoUpDown" scope="page" value="ico-up-arrow actionBuy"/>
@@ -263,7 +321,8 @@
 									<p class="itemDate"><fmt:formatDate value="${activity.date}" pattern="dd/MM/yyyy hh:mm aaa"/></p>
 								</div>
 							</li>
-				 		</c:forEach>
+				 		</c:forEach> --%>
+				 		<!-- 使用hardcode -->
 				 			<!-- <li>
 							  <div class="itemTitle">
 							    <div class="listUserIco">
@@ -505,6 +564,7 @@
 <script src="js/FeedEk.js"></script>
 <script src="js/raphael.js"></script>
 <script src="js/morris.min.js"></script>
+	<script src="js/angular.min.js"></script>
 <script>
 var financial_data = [];
 
@@ -516,6 +576,10 @@ financial_data.push({
 </c:forEach>
 </script>
 <script>
+var cloudStreetMarketApp = angular.module('cloudStreetMarketApp', []);
+var tmpYmax = <c:out value="${dailyMarketActivity.maxValue}"/>;
+var tmpYmin = <c:out value="${dailyMarketActivity.minValue}"/>;
+/*
 $(function () {
 	$(function () {
 		 Morris.Line({
@@ -531,7 +595,7 @@ $(function () {
 		 lineColors: ['#A52A2A']
 		 });
 		});
-	 /* var financial_data = [
+	 var financial_data = [
 		 {"period": "08:00", "index": 66},
 		 {"period": "09:00", "index": 62},
 		 {"period": "10:00", "index": 61},
@@ -555,9 +619,12 @@ $(function () {
 		 parseTime: false, labels: ['Index'],
 		 resize: true, smooth: false,
 		 lineColors: ['#A52A2A']
-	 	}); */
-	});
+	 	}); 
+	});*/
 </script>
+	<script src="js/home_financial_graph.js"></script>
+	<script src="js/home_financial_table.js"></script>
+	<script src="js/home_community_activity.js"></script>
 <!-- end: Java Script -->
 
 </body>
