@@ -16,6 +16,10 @@
 	
 	<context:component-scan base-package="edu.zipcloud.cloudstreetmarket.api"/>
 
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="synchronizeOnSession" value="true"/>
+	</bean>
+
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
 
@@ -29,5 +33,8 @@
 	<mvc:resources mapping="/css/**" location="/css/" />
 	<mvc:resources mapping="/img/**" location="/img/" />
 	<mvc:resources mapping="/js/**" location="/js/" />
-
+	
+	<mvc:interceptors>
+		<bean class="edu.zipcloud.cloudstreetmarket.api.controllers.CloudstreetApiWCI"/>
+	</mvc:interceptors>
 </beans>

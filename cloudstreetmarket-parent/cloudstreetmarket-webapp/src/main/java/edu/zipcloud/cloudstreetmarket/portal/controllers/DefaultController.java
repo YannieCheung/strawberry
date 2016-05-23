@@ -11,7 +11,7 @@ import edu.zipcloud.cloudstreetmarket.core.services.ICommunityService;
 import edu.zipcloud.cloudstreetmarket.core.services.IMarketService;
 
 @Controller
-public class DefaultController {
+public class DefaultController extends CloudstreetWebAppWCI{
 	
 	@Autowired
 	private ICommunityService communityService;
