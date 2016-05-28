@@ -1,12 +1,68 @@
-<beans xmlns="http://www.springframework.org/schema/beans"  
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"  
- xmlns:context="http://www.springframework.org/schema/context"  
- xsi:schemaLocation="http://www.springframework.org/schema/beans  
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
   http://www.springframework.org/schema/beans/spring-beans.xsd  
+  http://www.springframework.org/schema/jdbc 
+  http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+  http://www.springframework.org/schema/data/jpa
+  http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
   http://www.springframework.org/schema/context  
-  http://www.springframework.org/schema/context/spring-context.xsd" >  
- 
- <context:annotation-config/>
- <context:component-scan base-package="edu.zipcloud.cloudstreetmarket.core" />  
+  http://www.springframework.org/schema/context/spring-context.xsd">
 
+	<context:property-placeholder location="classpath:cmsapp.properties"/>
+
+	<context:annotation-config />
+	<context:component-scan base-package="edu.zipcloud.cloudstreetmarket.core" />
+
+	<jpa:repositories base-package="edu.zipcloud.cloudstreetmarket.core.daos" />
+
+<!-- 	<bean id="dataSource"
+		class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName">
+			<value>org.hsqldb.jdbcDriver</value>
+		</property>
+		<property name="url">
+			<value>jdbc:hsqldb:mem:csm</value>
+		</property>
+		<property name="username">
+			<value>sa</value>
+		</property>
+	</bean> -->
+
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driver}"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.username}"/>
+	</bean>
+
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="jpaData" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter">
+			<bean class = "org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">${persist.dialect}</prop>
+				<prop key="hibernate.default_schema">${persist.schema}</prop>
+				<!-- <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+				<prop key="hibernate.default_schema">public</prop> -->
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	    <property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<jdbc:initialize-database data-source="dataSource">
+	    <jdbc:script location="classpath:/META-INF/db/${db.script}"/>
+	</jdbc:initialize-database>
 </beans>
