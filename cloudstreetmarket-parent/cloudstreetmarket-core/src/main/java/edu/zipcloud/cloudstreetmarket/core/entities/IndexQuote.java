@@ -20,6 +20,7 @@ public class IndexQuote extends Quote implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -8489961093558359651L;
+	/**指数**/
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="index_code")
 	private Index index;

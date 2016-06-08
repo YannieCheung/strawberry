@@ -260,7 +260,7 @@
 				if( transitionSupport() ) {
 
 					$el
-						.adjRounding( opt.slide ) /* Accounts for browser rounding errors. Lookin’ at you, iOS Safari. */
+						.adjRounding( opt.slide ) /* Accounts for browser rounding errors. Lookinâ€™ at you, iOS Safari. */
 						.css('marginLeft', ui.moveTo + "%")
 						.one("transitionend webkitTransitionEnd OTransitionEnd", function() {
 							$(this).trigger( opt.namespace + "-aftermove" );
@@ -532,6 +532,6 @@ $.event.special.dragSnap = {
 
 $(document).ready(function() {
 	$('.testimonials-carousel').carousel({ 
-			namespace: "mr-rotato" // Defaults to “carousel”.
+			namespace: "mr-rotato" // Defaults to â€œcarouselâ€�.
 	})
 });

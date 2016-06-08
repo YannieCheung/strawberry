@@ -3,8 +3,11 @@ package edu.zipcloud.cloudstreetmarket.core.daos;
 import java.util.Date;
 
 import edu.zipcloud.cloudstreetmarket.core.entities.HistoricalIndex;
+import edu.zipcloud.cloudstreetmarket.core.enums.MarketCode;
+import edu.zipcloud.cloudstreetmarket.core.enums.QuotesInterval;
 
 public interface HistoricalIndexRepository {
+	Iterable<HistoricalIndex> findHistoric(String code, MarketCode market, Date fromDate, Date toDate, QuotesInterval interval);
 	/**
 	 * 查看某日指标的历史记录
 	 * @param code 指标代码
