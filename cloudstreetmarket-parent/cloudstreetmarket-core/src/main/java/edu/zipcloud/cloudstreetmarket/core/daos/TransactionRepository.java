@@ -2,6 +2,9 @@ package edu.zipcloud.cloudstreetmarket.core.daos;
 
 import java.util.Date;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import edu.zipcloud.cloudstreetmarket.core.entities.Transaction;
 import edu.zipcloud.cloudstreetmarket.core.entities.User;
 
@@ -10,7 +13,8 @@ public interface TransactionRepository {
 	 * 查找全部交易
 	 * @return
 	 */
-	Iterable<Transaction> findAll();
+//	Iterable<Transaction> findAll();
+	Page<Transaction> findAll(Pageable pageable);
 	/**
 	 * 根据用户查找交易
 	 * @param user

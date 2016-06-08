@@ -1,5 +1,6 @@
 package edu.zipcloud.cloudstreetmarket.core.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -32,20 +33,20 @@ public abstract class Historic {
 	@Id
 	@GeneratedValue
 	private int id;
-
-	private double open;
-	
-	private double high;
-	
-	private double low;
-	
-	private double close;
-	
+	/**开盘价**/
+	private BigDecimal open;
+	/**最高价**/
+	private BigDecimal high;
+	/**最低价**/
+	private BigDecimal low;
+	/**收盘价**/
+	private BigDecimal close;
+	/**量**/
 	private double volume;
-	
+	/**经过调整后的收盘价**/
 	@Column(name="adj_close")
-	private double adjClose;
-
+	private BigDecimal adjClose;
+	/**百分比**/
 	@Column(name="change_percent")
 	private double changePercent;
 	
@@ -56,7 +57,7 @@ public abstract class Historic {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="to_date")
 	private Date toDate;
-	
+	/**时间间隔**/
 	@Enumerated(EnumType.STRING)
 	@Column(name="quotes_interval")
 	private QuotesInterval interval;
@@ -69,36 +70,44 @@ public abstract class Historic {
 		this.id = id;
 	}
 
-	public double getOpen() {
+	public BigDecimal getOpen() {
 		return open;
 	}
 
-	public void setOpen(double open) {
+	public void setOpen(BigDecimal open) {
 		this.open = open;
 	}
 
-	public double getHigh() {
+	public BigDecimal getHigh() {
 		return high;
 	}
 
-	public void setHigh(double high) {
+	public void setHigh(BigDecimal high) {
 		this.high = high;
 	}
 
-	public double getLow() {
+	public BigDecimal getLow() {
 		return low;
 	}
 
-	public void setLow(double low) {
+	public void setLow(BigDecimal low) {
 		this.low = low;
 	}
 
-	public double getClose() {
+	public BigDecimal getClose() {
 		return close;
 	}
 
-	public void setClose(double close) {
+	public void setClose(BigDecimal close) {
 		this.close = close;
+	}
+
+	public BigDecimal getAdjClose() {
+		return adjClose;
+	}
+
+	public void setAdjClose(BigDecimal adjClose) {
+		this.adjClose = adjClose;
 	}
 
 	public double getVolume() {
@@ -107,14 +116,6 @@ public abstract class Historic {
 
 	public void setVolume(double volume) {
 		this.volume = volume;
-	}
-
-	public double getAdjClose() {
-		return adjClose;
-	}
-
-	public void setAdjClose(double adjClose) {
-		this.adjClose = adjClose;
 	}
 
 	public Date getFromDate() {

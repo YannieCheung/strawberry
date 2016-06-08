@@ -8,6 +8,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import edu.zipcloud.cloudstreetmarket.core.entities.Transaction;
@@ -21,10 +23,10 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	@Autowired
 	private TransactionRepositoryJpa repo;
 	
-	@Override
-	public Iterable<Transaction> findAll() {
-		return repo.findAll();
-	}
+//	@Override
+//	public Iterable<Transaction> findAll() {
+//		return repo.findAll();
+//	}
 
 	@Override
 	public Iterable<Transaction> findByUser(User user) {
@@ -42,6 +44,11 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	public Iterable<Transaction> findRecentTransactions(int nb) {
 		TypedQuery<Transaction> sqlQuery = em.createQuery("from Transaction t ORDER BY t.quote.date desc", Transaction.class);
 		return sqlQuery.setMaxResults(nb).getResultList();
+	}
+
+	@Override
+	public Page<Transaction> findAll(Pageable pageable) {
+		return repo.findAll(pageable);
 	}
 
 }

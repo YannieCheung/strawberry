@@ -9,6 +9,8 @@ import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import edu.zipcloud.cloudstreetmarket.core.entities.HistoricalIndex;
+import edu.zipcloud.cloudstreetmarket.core.enums.MarketCode;
+import edu.zipcloud.cloudstreetmarket.core.enums.QuotesInterval;
 import edu.zipcloud.util.DataUtil;
 
 @Repository
@@ -29,6 +31,7 @@ public class HistoricalIndexRepositoryImpl implements HistoricalIndexRepository 
 
 	@Override
 	public Iterable<HistoricalIndex> findLastIntraDay(String code) {
+		System.out.println(code);
 		return findIntraDay(code, findLastHistoric(code).getToDate());
 	}
 
@@ -37,6 +40,18 @@ public class HistoricalIndexRepositoryImpl implements HistoricalIndexRepository 
 		TypedQuery<HistoricalIndex> sqlQuery = em.createQuery("from HistoricalIndex h where h.index.code = ? ORDER BY h.toDate desc", HistoricalIndex.class);
 		sqlQuery.setParameter(1, code);
 		return sqlQuery.setMaxResults(1).getSingleResult();
+	}
+
+	@Override
+	public Iterable<HistoricalIndex> findHistoric(String code, MarketCode market, Date fromDate, Date toDate,
+			QuotesInterval interval) {
+		TypedQuery<HistoricalIndex> sqlQuery = em.createQuery("from HistoricalIndex h where h.index.code = ? and h.index.market.code = ? and h.fromDate >= ? and h.toDate <= ? and h.interval = ? ORDER BY h.toDate asc", HistoricalIndex.class);
+		sqlQuery.setParameter(1, code);
+		sqlQuery.setParameter(2, market);
+		sqlQuery.setParameter(3, fromDate);
+		sqlQuery.setParameter(4, toDate);
+		sqlQuery.setParameter(5, interval);
+		return sqlQuery.getResultList();
 	}
 
 }

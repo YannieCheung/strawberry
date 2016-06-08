@@ -7,7 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
+/**
+ * 历史指数记录
+ * @author Urumi
+ *
+ */
 @Entity
 @DiscriminatorValue("idx")
 public class HistoricalIndex extends Historic implements Serializable {

@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import edu.zipcloud.cloudstreetmarket.core.dtos.UserActivityDTO;
@@ -25,6 +27,12 @@ public class DummyCommunityServiceImpl implements ICommunityService {
 				new UserActivityDTO("traderXX", null, Action.BUY, "BLND.L", 6, new BigDecimal(15), LocalDateTime.parse("2015-11-15 09:50", formatter)),
 				new UserActivityDTO("userB", null, Action.BUY, "AAL.L", 6, new BigDecimal(7), LocalDateTime.parse("2015-11-15 09:46", formatter)));
 		return result;
+	}
+
+	@Override
+	public Page<UserActivityDTO> getPublicActivity(Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -17,24 +17,94 @@
 	<context:component-scan base-package="edu.zipcloud.cloudstreetmarket.api"/>
 
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-		<property name="synchronizeOnSession" value="true"/>
+		<!-- 请求数据绑定初始化 -->
+		<property name="webBindingInitializer">
+			<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+				<property name="conversionService" ref="conversionService"></property>
+			</bean>
+		</property>
+		<!-- 消息转换 -->
+	    <property name="messageConverters">
+	        <list>
+	        	<ref bean="jsonConverter"/>
+	        	<ref bean="xmlConverter"/>
+	        </list>
+	    </property>
+		<property name="customArgumentResolvers">
+			<list>
+				<bean class="net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver"/>
+		        <bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver">
+		        	<property name="pageParameterName" value="pn"/>
+		        	<property name="sizeParameterName" value="ps"/>
+		        </bean>
+			</list>
+		</property>
+	    <property name="requireSession" value="false"/>
+	    <property name="contentNegotiationManager" ref="contentNegotiationManager"/>
 	</bean>
-
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
-
-	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/WEB-INF/jsp/" />
-		<property name="suffix" value=".jsp" />
+	<!-- 消息转换器，用于按转换目标输出响应内容 -->
+	<!-- Json消息转换器 -->
+	<bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+	    <property name="supportedMediaTypes" value="application/json"/>
+	    <property name="objectMapper">
+	   		<!-- Automatically parses the Dates of the response object into a default string format-->
+           <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+               <property name="dateFormat">
+	               <bean class="java.text.SimpleDateFormat">
+	               		<constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm"/>
+	               </bean>
+               </property>
+           </bean>
+        </property>
 	</bean>
+	<!-- xml消息转换器 -->
+	<bean id="xmlConverter" class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+		<property name="marshaller">
+			<ref bean="xStreamMarshaller"/>
+		</property>
+		<property name="unmarshaller">
+			<ref bean="xStreamMarshaller"/>
+		</property>
+	</bean>
+	
+	<bean id="xStreamMarshaller" class="org.springframework.oxm.xstream.XStreamMarshaller">
+		<property name="autodetectAnnotations" value="true"/>
+	</bean>
+	
+	<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+		<property name="favorPathExtension" value="true"/>
+		<property name="favorParameter" value="false"/>
+		<property name="ignoreAcceptHeader" value="false"/>
+		<property name="parameterName" value="format"/>
+		<property name="useJaf" value="false"/>
+		<property name="defaultContentType" value="application/json"/>
+		<property name="mediaTypes">
+			<map>
+				<entry key="json" value="application/json"/>
+				<entry key="xml" value="application/xml"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="conversionService"
+	      class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+	    <property name="converters">
+	        <list>
+	            <bean class="edu.zipcloud.cloudstreetmarket.core.converters.StringToStockProduct"/>
+	        </list>
+	    </property>
+	</bean>
+	
+	<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
+	<bean class="edu.zipcloud.cloudstreetmarket.api.swagger.SwaggerConfig"/>
 
-	<mvc:annotation-driven />
-	<mvc:resources mapping="/css/**" location="/css/" />
-	<mvc:resources mapping="/img/**" location="/img/" />
-	<mvc:resources mapping="/js/**" location="/js/" />
+	<context:property-placeholder location="classpath*:/META-INF/properties/swagger.properties" />
 	
 	<mvc:interceptors>
 		<bean class="edu.zipcloud.cloudstreetmarket.api.controllers.CloudstreetApiWCI"/>
 	</mvc:interceptors>
+
+	<!-- Serve static content-->
+	<mvc:default-servlet-handler/>
+	<mvc:annotation-driven/>
 </beans>

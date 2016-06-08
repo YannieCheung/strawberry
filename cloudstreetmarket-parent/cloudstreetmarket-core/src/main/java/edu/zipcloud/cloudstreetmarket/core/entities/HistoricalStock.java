@@ -7,7 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
+/**
+ * 历史股票记录
+ * @author Urumi
+ *
+ */
 @Entity
 @DiscriminatorValue("stk")
 public class HistoricalStock extends Historic implements Serializable {
@@ -20,9 +24,9 @@ public class HistoricalStock extends Historic implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "stock_code")
 	private StockProduct stock;
-
+	/**抛出价**/
 	private double bid;
-	
+	/**购入价**/
 	private double ask;
 	
 	public StockProduct getStock() {
